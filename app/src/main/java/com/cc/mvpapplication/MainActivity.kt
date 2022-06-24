@@ -1,7 +1,12 @@
 package com.cc.mvpapplication
 
 import android.app.usage.UsageEvents
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.os.Parcel
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -52,10 +57,37 @@ class MainActivity : BaseActivity() , Me,ViewInterface {
             presenterImpl?.tellModelToCreate("cityCode")
         }
 
+        mBinding.tvAms.setOnClickListener {
+            var intent = Intent();
+            intent.component = ComponentName("com.cc.skillapp","com.cc.skillapp.service.ActivityManagerService");
+            bindService(intent,conn, BIND_AUTO_CREATE)
+        }
 
         testRxjavaLifecycle()
 
     }
+
+    var conn = object:ServiceConnection{
+        override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
+            Utils.print("CONN")
+            var data = Parcel.obtain()
+            var reply = Parcel.obtain()
+            var result = 0
+            data.writeInterfaceToken("cc.skill.IActivityManager")
+            intent = Intent()
+            intent.setAction("test.demo.action.life.a")
+            intent.writeToParcel(data,0)
+            p1?.transact(6,data,reply,0)
+            result  = reply.readInt()
+            Utils.print("输出：$result")
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            TODO("Not yet implemented")
+        }
+
+    }
+
 
     private fun testRxjavaLifecycle(){
         Observable.interval(0,1,TimeUnit.SECONDS)

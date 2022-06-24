@@ -40,5 +40,10 @@
             android:layout_height="wrap_content"
             android:text="cc View" />
 
+        <TextView
+            android:id="@+id/tv_ams"
+            style="@style/ccText"
+            android:text="test ams"/>
+
     </LinearLayout>
 </layout>
